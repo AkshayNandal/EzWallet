@@ -1,6 +1,7 @@
 package wallet.crud;
 
 import java.util.List;
+import wallet.transaction.*;
 
 import java.sql.*;
 
@@ -8,10 +9,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import wallet.exceptions.AccountNotFoundException;
 import wallet.exceptions.InsufficientFundsException;
+import wallet.exceptions.PassbookNotFoundException;
 import wallet.model.Account;
 
 public class AccountDAOImpl implements AccountDAO{
 
+	//static transactionRecorder transferRecorder;
 	private JdbcTemplate jdbcTemplate;  
 	public static String pin;
 	public static String newID;
@@ -69,16 +72,53 @@ public class AccountDAOImpl implements AccountDAO{
 }
 
 	@Override
-	public Account updateAccount(String AccountID, String Account_Name) throws AccountNotFoundException {
+	public String generatePin() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String generatePin() {
-		// TODO Auto-generated method stub
-		return null;
+	public double deposit(double Amount, String AccountID) throws AccountNotFoundException {
+			wallet.model.Account account=new wallet.model.Account();
+			//account=getAccountByID(AccountID);
+			System.out.println("Balance:"+account.getAccount_Balance());
+			String sql="UPDATE Account Set Account_Balance=? where AccountID=?";
+			double total=account.getAccount_Balance()+Amount;
+			return jdbcTemplate.update(sql,new Object[]{total,AccountID});
+			
+			
+
+}
+
+	@Override
+	public double withdraw(double Amount, String AccountID)
+			throws AccountNotFoundException, InsufficientFundsException {
+			wallet.model.Account account=new wallet.model.Account();
+			if(account.getAccount_Balance()<1000){
+				new InsufficientFundsException("You don't have sufficient funds");
+			}
+			String sql="UPDATE Account set Account_Balance=? where AccountID=?";
+			double total2=account.getAccount_Balance()-Amount;
+			return jdbcTemplate.update(sql, new Object[]{total2,AccountID});
 	}
-	
+
+	@Override
+	public double fundTransfer(String AccountID, String AccountID2, double Amount)
+			throws AccountNotFoundException, InsufficientFundsException {
+				wallet.model.Account account=new wallet.model.Account();
+				if(account.getAccount_Balance()<1000){
+					new InsufficientFundsException("You don't have funds to transfer");
+				}
+				withdraw(Amount,AccountID);
+				return deposit(Amount,AccountID2);
+	}
+
+	@Override
+	public int transferRecorder(String AccountID, String transactionType, String transactionID, double Account_Balance)
+			throws AccountNotFoundException, PassbookNotFoundException {
+			
+		return 0;
+	}
+
 
 }

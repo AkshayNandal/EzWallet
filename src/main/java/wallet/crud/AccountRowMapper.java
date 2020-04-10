@@ -10,10 +10,10 @@ org.springframework.jdbc.core.RowMapper<wallet.model.Account>{
 	@Override
 	public Account mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
 		wallet.model.Account account=new wallet.model.Account();
-		account.setAccountID(resultSet.getString("Account_ID"));
+		account.setAccountID(resultSet.getString("AccountID"));
 		account.setAccount_Name(resultSet.getString("Account_Name"));
 		account.setAccount_Balance(resultSet.getDouble("Account_Balance"));
-		account.setPin(resultSet.getString("Account_pin"));
+		account.setPin(resultSet.getString("Pin"));
 		return account;
 	}
 
